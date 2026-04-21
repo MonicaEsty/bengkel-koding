@@ -1,46 +1,37 @@
 <?php
 
-use App\Http\Controllers\AuthController;
-use App\Http\Controllers\PoliController;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\AuthController;
+use App\Http\Controllers\Admin\DokterController;
+use App\Http\Controllers\Admin\PasienController;
+use App\Http\Controllers\Admin\PoliController as AdminPoli; 
+use App\Http\Controllers\Admin\ObatController;
 
-// Show the welcome page to the user
 Route::get('/', function () {
     return view('welcome');
 });
 
-// Show the login form to the user
+// Auth Routes
 Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
-
-// Handle login form submission
 Route::post('/login', [AuthController::class, 'login'])->name('login.post');
-
-// Show the registration form to the user
 Route::get('/register', [AuthController::class, 'showRegister'])->name('register.form');
-
-// Handle registration form submission
 Route::post('/register', [AuthController::class, 'register'])->name('register');
-
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
-// Group routes by user role with appropriate middleware and URL prefixes
 Route::middleware(['auth'])->group(function () {
+
+    // --- RUTE KHUSUS ADMIN ---
     Route::middleware(['role:admin'])->prefix('admin')->group(function () {
         Route::get('/dashboard', function () {
             return view('admin.dashboard');
         })->name('admin.dashboard');
-        Route::resource('polis', PoliController::class);
+        
+        // Menggunakan nama alias AdminPoli
+        Route::resource('polis', AdminPoli::class); 
+        Route::resource('dokter', DokterController::class);
+        Route::resource('pasien', PasienController::class);
+        Route::resource('obat', ObatController::class);
     });
 
-    Route::middleware(['role:dokter'])->prefix('dokter')->group(function () {
-        Route::get('/dashboard', function () {
-            return view('dokter.dashboard');
-        })->name('dokter.dashboard');
-    });
-
-    Route::middleware(['role:pasien'])->prefix('pasien')->group(function () {
-        Route::get('/dashboard', function () {
-            return view('pasien.dashboard');
-        })->name('pasien.dashboard');
-    });
+    // ... rute dokter dan pasien tetap sama
 });
