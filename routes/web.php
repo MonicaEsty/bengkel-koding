@@ -7,6 +7,8 @@ use App\Http\Controllers\Admin\PasienController;
 use App\Http\Controllers\Admin\PoliController as AdminPoli; 
 use App\Http\Controllers\Admin\ObatController;
 use App\Http\Controllers\Dokter\JadwalPeriksaController;
+use App\Http\Controllers\Dokter\PeriksaPasienController;
+use App\Http\Controllers\Dokter\RiwayatPasienController; // Tambahan Import Baru
 use App\Http\Controllers\Pasien\PoliController as PasienPoliController;
 
 Route::get('/', function () {
@@ -40,7 +42,17 @@ Route::middleware(['auth'])->group(function () {
             return view('dokter.dashboard');
         })->name('dokter.dashboard');
         
+        // Rute Jadwal Periksa
         Route::resource('jadwal-periksa', JadwalPeriksaController::class);
+
+        // Rute Periksa Pasien
+        Route::get('/periksa-pasien', [PeriksaPasienController::class, 'index'])->name('periksa-pasien.index');
+        Route::post('/periksa-pasien', [PeriksaPasienController::class, 'store'])->name('periksa-pasien.store');
+        Route::get('/periksa-pasien/{id}', [PeriksaPasienController::class, 'create'])->name('periksa-pasien.create');
+
+        // Rute Riwayat Pasien (Sesuai Gambar Terbaru)
+        Route::get('/riwayat-pasien', [RiwayatPasienController::class, 'index'])->name('riwayat-pasien.index');
+        Route::get('/riwayat-pasien/{id}', [RiwayatPasienController::class, 'show'])->name('riwayat-pasien.show');
     });
 
     // --- RUTE KHUSUS PASIEN ---
